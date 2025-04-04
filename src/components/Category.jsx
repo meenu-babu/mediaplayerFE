@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { toast } from 'react-toastify';
-import { addCategory, deleteVideoCategory, getAllCategories } from '../services/allApi';
+import { addCategory, deleteVideoCategory, getAllCategories, getVideoDetailsById } from '../services/allApi';
 
 
 function Category() {
@@ -43,8 +43,8 @@ function Category() {
       const getCategories=async()=>
       {
         const response=await getAllCategories();
-        console.log("getting all categories")
-        console.log(response)
+        // console.log("getting all categories")
+        // console.log(response)
         const {data}=response;
         setCategories(data)
 
@@ -59,6 +59,27 @@ function Category() {
         // alert(id)
         await deleteVideoCategory(id)
         getCategories()
+      }
+      const dragOver=(e)=>
+      {
+        e.preventDefault();
+        console.log("Inside dragover")
+      }
+      const videoDropped=async(e,id)=>
+      {
+        console.log(`dropped inside category with id ${id}`)
+        const vId=e.dataTransfer.getData('videoID'); //fetching video id from VideoCard.jsx using dataTransfer method
+        console.log(`video with id ${vId} is dropped in category with id ${id}`)
+        const result=await getVideoDetailsById(vId) 
+        console.log(result)
+        const {data} = result;
+        let selectedCategory=categories?.find((item=>item.id==id));
+        console.log('selected category')
+        console.log(selectedCategory);
+        selectedCategory.allVideos.push(data)
+        console.log('final category')
+        console.log(selectedCategory)
+
       }
   return (
    <>
@@ -98,7 +119,8 @@ function Category() {
       {
 
 categories?.map((item)=>(
-<div className='border border-secondary rounded  m-3 p-3'>
+<div className='border border-secondary rounded  m-3 p-3'
+ droppable onDragOver={(e)=>dragOver(e)} onDrop={(e)=>videoDropped(e,item.id)} >
   <div className='d-flex justify-content-between align-items-center '>
     <h6>{item.categoryName}</h6>
     <button className='btn btn-danger'onClick={()=>deleteCategory(item.id)}>

@@ -49,10 +49,15 @@ export default function VideoCard({displayVideo,setDeleteVideoStatus}) {
       await addToHistory(history)
      
     };
+    const dragStarted=(e,id)=>
+    {
+      console.log(`video with  id ${id} started dragging`)
+      e.dataTransfer.setData("videoID",id)
+    }
 
   return (
    <> 
-   <Card style={{ width: '14rem' }}>
+   <Card style={{ width: '14rem' }}draggable onDragStart={(e)=>dragStarted(e,displayVideo.id)}>
       <Card.Img variant="top" src={displayVideo.thumbnailUrl} height={'200px'} onClick={handleShow}/>
       <Card.Body>
         <div className='d-flex justify-content-between'> <Card.Title>{displayVideo.caption.slice(0,12)}...</Card.Title>
